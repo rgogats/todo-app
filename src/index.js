@@ -1,3 +1,3 @@
-import './style.css';
+import UIController from './uiController.js';
 
-console.log('oh hey!');
+UIController();

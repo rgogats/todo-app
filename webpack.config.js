@@ -7,15 +7,21 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
+    devtool: 'inline-source-map',
+    devServer: {
+      static: './src',
+      port: 3000,
+    },
+    stats: 'minimal',
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html',
+            template: 'src/index.html',
         }),
     ],
     module: {
         rules: [
           {
-            test: /\.css$/i,
+            test: /\.css$/,
             use: ['style-loader', 'css-loader'],
           },
         ],

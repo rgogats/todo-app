@@ -1,10 +1,19 @@
-const ToDoList = ((id, label) => {
+const allTodoLists = [];
+
+const getAllTodoLists = () => {
+    return allTodoLists;
+}
+
+const TodoList = ((id, label) => {
+    console.log('new todolist', id, label);
     const todos = [];
     let status = 'active';
 
     const getTodos = () => todos;
 
     const getLabel = () => label;
+
+    const getId = () => id;
 
     const editLabel = (newLabel) => {
         label = newLabel;
@@ -24,7 +33,11 @@ const ToDoList = ((id, label) => {
         status = 'deleted';
     };
 
-    return { getTodos, addTodo, removeTodo, getLabel, editLabel, deleteList };
+    allTodoLists.push({ id, label });
+    console.log('all todolists', allTodoLists);
+    console.log('all todolists.length', allTodoLists.length);
+
+    return { getTodos, addTodo, removeTodo, getLabel, getId, editLabel, deleteList };
 });
 
-export default ToDoList;
+export { getAllTodoLists, TodoList };

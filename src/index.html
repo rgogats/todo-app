@@ -9,6 +9,7 @@
 <body>
     <h1>To-Do Manager</h1>
     <button type="button" id="new-todo" data-toggle="modal" data-target="#newTodo">New to-do</button>
+    <div id="content"></div>
     <div class="modal fade" id="newTodoModal" role="dialog">
         <div class="modal-dialog">
           <!-- Modal content-->
@@ -23,7 +24,6 @@
                   <input type="text" name="desc" class="form-control" id="title" placeholder="Enter title">
                 </div>
                 <div class="form-group">
-                  <label for="desc"><span class="glyphicon"></span> Description</label>
                   <textarea rows="4" name="desc" class="form-control" id="desc">Enter your to-do description here...</textarea>
                 </div>
                 <div class="form-group">
@@ -35,7 +35,8 @@
             </div>
           </div>
         </div>
-    <div id="content"></div>
+    </div>
+    <button type="button" id="new-todolist" data-toggle="modal" data-target="#newTodolist">New to-do list</button>
     <script src="./bundle.js"></script>
 </body>
 </html>

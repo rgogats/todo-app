@@ -1,8 +1,7 @@
-const ToDo = ((title, desc) => {
+const ToDo = ((title, desc, listId) => {
     let priorityLevel;
     let dueDate;
     let status = 'active';
-    let listId;
     let descPreview = desc.length > 20 ? desc.slice(0,20) + '[...]' : desc;
 
     const getTodo = () => {

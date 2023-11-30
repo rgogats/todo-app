@@ -17,6 +17,7 @@ div#content {
     padding: 20px;
     margin: 10px;
     display: flex;
+    flex-wrap: wrap;
     border: 1px solid #800080;
     border-style: double;
 }
@@ -37,14 +38,13 @@ div#content {
     font-size: '1.2rem';
 }
 
-button.edit {
-    color: white;
-    background-color: rgb(206, 232, 180);
+button.view {
+    background-color: rgb(167, 255, 245);
 }
 
-button.delete {
+button.done {
     color: white;
-    background-color: red;
+    background-color: rgb(0, 112, 36);
 }
 
 .modal {

@@ -25,8 +25,8 @@ const ToDo = ((title, desc, listId) => {
         dueDate = date;
     }
 
-    const deleteTodo = () => {
-        status = 'deleted';
+    const finishTodo = () => {
+        status = 'done';
         console.log('status: ', status);
     }
 
@@ -34,7 +34,7 @@ const ToDo = ((title, desc, listId) => {
         listId = newListId;
     }
 
-    return { getTodo, editTodo, setPriority, setDueDate, moveTodo, deleteTodo };
+    return { getTodo, editTodo, setPriority, setDueDate, moveTodo, finishTodo };
 });
 
 export default ToDo;

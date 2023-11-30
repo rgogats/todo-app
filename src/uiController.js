@@ -4,15 +4,18 @@ import Todo from './todo.js';
 const UIController = (() => {
     // initialize default list and todolist-container element
     const bodyContent = document.querySelector('div#content');
-    const pageHeader = document.querySelector('h1');    
     const newTodoButton = document.querySelector('button#new-todo');
     const todoModal = document.querySelector('div#newTodoModal');
+    const viewModal = document.querySelector('div#viewTodoModal');
     const todoForm = document.querySelector('form');
     const title = document.querySelector('input#title.form-control');
-    const desc = document.querySelector('textarea#desc.form-control');
+    const desc = document.querySelector('textarea#desc');
+    console.log('desc', desc);
     const listSelector = document.querySelector('select#list.form-control');
-    const closeFormButton = document.querySelector('button.close');
+    const newModalCloseButton = document.querySelector('button#new.close');
+    const viewModalCloseButton = document.querySelector('button#view.close');
     const newlistButton = document.querySelector('button#new-todolist');
+
 
     // create empty todolist-container
     const todoListContainer = document.createElement('div');
@@ -21,15 +24,18 @@ const UIController = (() => {
     listLabelHeader.className = 'list-label';
     todoListContainer.appendChild(listLabelHeader);
     bodyContent.appendChild(todoListContainer);
+    todoListContainer.dataset.index = '0';
 
     // create default list
     const defaultList = TodoList(0, 'Default List');
     listLabelHeader.textContent = defaultList.getLabel();
 
     newTodoButton.addEventListener('click', (()=> {
-        console.log('click new todo');
-        todoModal.style.display = 'block';
-        console.log(listSelector);
+        todoModal.style.display = 'block'; 
+
+        while(listSelector.hasChildren) {
+            listSelector.removeChild(listSelector.lastChild);
+        };
 
         for(let i = 0; i < getAllTodoLists().length; i++) {
             const listOption = document.createElement('option');
@@ -39,8 +45,11 @@ const UIController = (() => {
         };
     }));
 
-    closeFormButton.addEventListener('click', (() => {
+    newModalCloseButton.addEventListener('click', (() => {
         todoModal.style.display = 'none';
+    }));
+    viewModalCloseButton.addEventListener('click', (() => {
+        viewModal.style.display = 'none';
     }));
 
     todoForm.addEventListener('submit', ((e) => {
@@ -48,17 +57,17 @@ const UIController = (() => {
 
         let matchIndex;
         let matchingListContainer;
-        for(let i = 0; i < getAllTodoLists().length; i++) {
+        for(let i = 1; i < getAllTodoLists().length; i++) {
             getAllTodoLists()[i].label === listSelector.value ? (matchIndex = getAllTodoLists()[i].id, console.log('match found', getAllTodoLists()[i])) : console.log('noMatch');
-            // listSelector.value === list.label ? console.log('match found') : console.log('noMatch');
-            // selector.value === todoList.title ? matchIndex = todoList.id
         };
-        if(matchIndex) {
-            console.log(`matching... ${matchIndex}`);
-            matchingListContainer = document.querySelector(`div.todolist-container[data-index="${matchIndex}"]`);
-            console.log('matchingListContainer', matchingListContainer);
-        }
-        // append todoList
+        console.log('matchIndex', matchIndex);
+        console.log('query test', document.querySelector('div.todolist-container[data-index="0"]'));
+        matchIndex ? (
+            console.log(`matching... ${matchIndex}`),
+            matchingListContainer = document.querySelector(`div.todolist-container[data-index="${matchIndex}"]`)
+            ) : matchingListContainer = document.querySelector('div.todolist-container[data-index="0"]');
+
+        console.log('matchingListContainer', matchingListContainer);
 
         const newTodo = Todo(title.value, desc.value, matchIndex);
         console.log('newTodo', newTodo);
@@ -68,40 +77,51 @@ const UIController = (() => {
         todoContainer.className = 'todo-container';
         matchingListContainer.appendChild(todoContainer);
 
+
         const todoItemTitle = document.createElement('div');
         todoItemTitle.className = 'todo-title';
         const todoItemDesc = document.createElement('div');
         todoItemDesc.className = 'todo-desc';
         todoItemTitle.textContent = `Title: ${newTodo.getTodo().title}`;
         todoItemDesc.textContent = `Description: ${newTodo.getTodo().descPreview}`;
-        const todoEditButton = document.createElement('button');
-        todoEditButton.className = 'edit';
-        todoEditButton.textContent = 'Edit';
-        const todoDeleteButton = document.createElement('button');
-        todoDeleteButton.className = 'delete';
-        todoDeleteButton.textContent = 'Delete';
+        const todoViewButton = document.createElement('button');
+        todoViewButton.className = 'view';
+        todoViewButton.textContent = 'View details';
+        const todoDoneButton = document.createElement('button');
+        todoDoneButton.className = 'done';
+        todoDoneButton.textContent = 'Mark as done';
 
         title.value = '';
-        desc.textContent = '';
+        desc.value = 'Enter your description here...';
 
         todoContainer.appendChild(todoItemTitle);
         todoContainer.appendChild(todoItemDesc);
-        todoContainer.appendChild(todoEditButton);
-        todoContainer.appendChild(todoDeleteButton);
+        todoContainer.appendChild(todoViewButton);
+        todoContainer.appendChild(todoDoneButton);
 
         todoContainer.addEventListener('click', (() => {
             console.log('expanded details here');
             // add logic to expand description
         }));
 
-        todoEditButton.addEventListener('click', (() => {
-            console.log('edit form here');
-            // add edit form logic
+        todoViewButton.addEventListener('click', (() => {
+            viewModal.style.display = 'block'; 
+            const viewModalBody = viewModal.querySelector('.modal-body');
+            console.log('viewModal', viewModal);
+            const viewModalTitle = document.createElement('h6');
+            const viewModalDesc = document.createElement('p');
+            viewModalTitle.className = 'title';
+            viewModalTitle.textContent = `Title: ${newTodo.getTodo().title}`;
+            viewModalDesc.textContent = `Description: ${newTodo.getTodo().desc}`;
+            viewModalBody.appendChild(viewModalTitle);
+            viewModalBody.appendChild(viewModalDesc);
         }));
 
-        todoDeleteButton.addEventListener('click', (() => {
-            console.log('delete logic here');
-            // add delete todo logic
+        todoDoneButton.addEventListener('click', ((e) => {
+            console.log('done logic here');
+            console.log('e.target.parentElement.parentElement', e.target.parentElement.parentElement);
+            e.target.parentElement.parentElement.removeChild(e.target.parentElement);
+            newTodo.finishTodo();
         }));
 
         todoModal.style.display = 'none';

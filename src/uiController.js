@@ -1,8 +1,9 @@
 import { getAllTodoLists, TodoList } from './todoList.js';
-import Todo from './todo.js';
+import { getAllTodos, ToDo } from './todo.js';
 
 const UIController = (() => {
     // initialize default list and todolist-container element
+    
     const bodyContent = document.querySelector('div#content');
     const newTodoButton = document.querySelector('button#new-todo');
     const todoModal = document.querySelector('div#newTodoModal');
@@ -25,6 +26,95 @@ const UIController = (() => {
     todoListContainer.appendChild(listLabelHeader);
     bodyContent.appendChild(todoListContainer);
     todoListContainer.dataset.index = '0';
+
+    (() => {
+        const savedTodos = localStorage.getItem('todos');
+        const savedTodoLists = localStorage.getItem('todoLists');
+        console.log('savedTodos', savedTodos);
+        console.log('savedTodolists', savedTodoLists);
+        
+        if(savedTodoLists) {
+            const todoListsArray = JSON.parse(savedTodoLists);
+            console.log('todoListsArray', todoListsArray);
+            todoListsArray.forEach(listData => {
+                const todoList = TodoList(listData.id, listData.label);
+                console.log('todoList.getLabel', todoList.getLabel());
+                // add to UI
+                const listContainer = document.createElement('div');
+                listContainer.className = 'todolist-container';
+                const listLabelHeader = document.createElement('h3');
+                listLabelHeader.className = 'list-label';
+                listLabelHeader.textContent = todoList.getLabel();
+                listContainer.dataset.index = todoList.getId();
+                bodyContent.appendChild(listContainer);
+                listContainer.appendChild(listLabelHeader);
+            });
+        };
+        
+        if(savedTodos) {
+            const todosArray = JSON.parse(savedTodos);
+            console.log('todosArray', todosArray);
+            todosArray.forEach(todoData => {
+                const todo = ToDo(todoData.title, todoData.desc, todoData.listId);
+
+                let matchingListContainer = document.querySelector(`div.todolist-container[data-index="${todoData.listId}"]`);
+                
+                const todoContainer = document.createElement('div');
+                todoContainer.className = 'todo-container';
+                matchingListContainer.appendChild(todoContainer);
+
+                const todoItemTitle = document.createElement('div');
+                todoItemTitle.className = 'todo-title';
+                const todoItemDesc = document.createElement('div');
+                todoItemDesc.className = 'todo-desc';
+                todoItemTitle.textContent = `Title: ${todo.getTodo().title}`;
+                todoItemDesc.textContent = `Description: ${todo.getTodo().descPreview}`;
+                const todoViewButton = document.createElement('button');
+                todoViewButton.className = 'view';
+                todoViewButton.textContent = 'View details';
+                const todoDoneButton = document.createElement('button');
+                todoDoneButton.className = 'done';
+                todoDoneButton.textContent = 'Mark as done';
+
+                todoContainer.appendChild(todoItemTitle);
+                todoContainer.appendChild(todoItemDesc);
+                todoContainer.appendChild(todoViewButton);
+                todoContainer.appendChild(todoDoneButton);
+                
+                
+
+                todoViewButton.addEventListener('click', (() => {
+                    viewModal.style.display = 'block'; 
+                    const viewModalBody = viewModal.querySelector('.modal-body');
+                    console.log('viewModal', viewModal);
+                    const viewModalTitle = document.createElement('h6');
+                    const viewModalDesc = document.createElement('p');
+                    viewModalTitle.className = 'title';
+                    viewModalTitle.textContent = `Title: ${newTodo.getTodo().title}`;
+                    viewModalDesc.textContent = `Description: ${newTodo.getTodo().desc}`;
+                    viewModalBody.appendChild(viewModalTitle);
+                    viewModalBody.appendChild(viewModalDesc);
+                }));
+
+                todoDoneButton.addEventListener('click', ((e) => {
+                    console.log('done logic here');
+                    console.log('e.target.parentElement.parentElement', e.target.parentElement.parentElement);
+                    e.target.parentElement.parentElement.removeChild(e.target.parentElement);
+                    newTodo.finishTodo();
+                }));
+                    })
+                };            
+    })();
+
+    const saveData = () => {
+        const todoLists = getAllTodoLists();
+        localStorage.setItem('todoLists', JSON.stringify(todoLists));
+
+        const todos = getAllTodos();
+        localStorage.setItem('todos', JSON.stringify(todos));
+
+        console.log('localStorage', localStorage);
+    };
 
     // create default list
     const defaultList = TodoList(0, 'Default List');
@@ -61,16 +151,19 @@ const UIController = (() => {
             getAllTodoLists()[i].label === listSelector.value ? (matchIndex = getAllTodoLists()[i].id, console.log('match found', getAllTodoLists()[i])) : console.log('noMatch');
         };
         console.log('matchIndex', matchIndex);
-        console.log('query test', document.querySelector('div.todolist-container[data-index="0"]'));
         matchIndex ? (
             console.log(`matching... ${matchIndex}`),
             matchingListContainer = document.querySelector(`div.todolist-container[data-index="${matchIndex}"]`)
-            ) : matchingListContainer = document.querySelector('div.todolist-container[data-index="0"]');
+            ) : (
+                matchIndex = 0,
+                matchingListContainer = document.querySelector('div.todolist-container[data-index="0"]')
+                );
 
         console.log('matchingListContainer', matchingListContainer);
 
-        const newTodo = Todo(title.value, desc.value, matchIndex);
+        const newTodo = ToDo(title.value, desc.value, matchIndex);
         console.log('newTodo', newTodo);
+        saveData();
         defaultList.addTodo(newTodo);
         
         const todoContainer = document.createElement('div');
@@ -137,12 +230,12 @@ const UIController = (() => {
         listLabelInput.addEventListener('keypress', ((e) => {
             e.key === "Enter" ? (
                 newList = TodoList(getAllTodoLists().length, listLabelInput.value),
-                console.log("getAllTodoLists.length", getAllTodoLists().length),
                 listContainer.removeChild(listLabelInput), 
                 listLabelHeader.className = 'list-label',
                 listLabelHeader.textContent = newList.getLabel(),
                 console.log(newList.getLabel()), 
-                listContainer.dataset.index = newList.getId()
+                listContainer.dataset.index = newList.getId(),
+                saveData()
             ) : null;
         }))
         
@@ -150,10 +243,10 @@ const UIController = (() => {
         listContainer.appendChild(listLabelHeader);
         listContainer.appendChild(listLabelInput);
         bodyContent.appendChild(listContainer);
+
         console.log('add listContainer', listContainer);
     }));
     
-
 });
 
 export default UIController;

@@ -1,3 +1,9 @@
+const allTodos = [];
+
+const getAllTodos = () => {
+    return allTodos;
+}
+
 const ToDo = ((title, desc, listId) => {
     let priorityLevel;
     let dueDate;
@@ -34,7 +40,9 @@ const ToDo = ((title, desc, listId) => {
         listId = newListId;
     }
 
+    allTodos.push({ title, desc, listId });
+
     return { getTodo, editTodo, setPriority, setDueDate, moveTodo, finishTodo };
 });
 
-export default ToDo;
+export { getAllTodos, ToDo };
